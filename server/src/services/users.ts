@@ -8,11 +8,11 @@ import organization from "../models/organization";
 
 export const registerUser = async (userGet: newUserDto) => {
     try {
-        const { username, password } = userGet
-        if (!username || !password) {
+        const { username, password , location, organizationName, orgId  } = userGet
+        if (!username || !password || !location || !organizationName || !orgId) {
             console.log(username, password);
             throw new CustomError(
-                "Username and password are required",
+                "All fields are required",
                 400
             )
         }
@@ -25,13 +25,23 @@ export const registerUser = async (userGet: newUserDto) => {
             )
         }
         //find the initial resources
-        const org = await organization.findOne({ name: userGet.organization })
+        const org = await organization.findOne({_id: orgId}).lean()
+        console.log(org)
         const initialResources = org?.resources
         const budget = org?.budget
         const hashedPassword = await bcrypt.hash(password, 10)
-        const newUser = new user({ username, password: hashedPassword, resources: initialResources, budget })
+        const newUser = new user({
+             username,
+              password: hashedPassword,
+            organization: organizationName,
+              resources: initialResources,
+               budget,
+            orgId,
+            location: userGet.location, })
+            console.log(newUser)
         await newUser.save()
-        return { success: true, data: { ...newUser, password: '********' }, message: "User created successfully", status: 201 }
+        const data = await user.findOne({ username }).lean()
+        return { success: true, data: { ...data, password: '********' }, message: "User created successfully", status: 201 }
     } catch (error) {
         console.log(error);
         throw error
@@ -66,7 +76,7 @@ export const loginUserService = async (userGet: newUserDto) => {
         //gen token
         const token =  jwt.sign({
             user_id: userExists._id,
-            organization: userExists.organization,
+            orgId: userExists.orgId,
             username: userExists.username
         }, process.env.JWT_SECRET as string, { expiresIn: "10m" });
         return { success: true, data: { ...userExists, password: '********' }, message: "User logged in successfully", status: 200, token }

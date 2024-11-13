@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { Document, model, ObjectId, Schema, Types } from "mongoose";
 
 export interface IRresource {
@@ -8,9 +9,11 @@ export interface IRresource {
 export interface IUser extends Document {
     username: string,
     password: string,
+    location: string,
     organization: string,
     resources: IRresource[],
     budget: number,
+    orgId: mongoose.Types.ObjectId
 }
 
 const userSchema = new Schema<IUser>({
@@ -25,6 +28,7 @@ const userSchema = new Schema<IUser>({
         maxLength: [20, "Username must be at most 20 characters long"]
     },
     password: { type: String, required: true },
+    location: { type: String, required: true },
     organization: {
         type: String,
         required: [true, "Password is required"]
@@ -39,6 +43,10 @@ const userSchema = new Schema<IUser>({
     budget: {
         type: Number,
         default: 0
+    },
+    orgId: {
+        type: Schema.Types.ObjectId,
+        ref: "Organization"
     }
 })
 

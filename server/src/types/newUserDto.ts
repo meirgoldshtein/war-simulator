@@ -2,7 +2,9 @@
 interface newUserDto {
     username: string;
     password: string;
-    organization: string;
+    organizationName: string;
+    location: string;
+    orgId: string
 
 }
 

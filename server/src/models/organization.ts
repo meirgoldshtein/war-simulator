@@ -34,5 +34,5 @@ const organizationSchema = new Schema<IOrganization>({
         default: 0
     }
 })
-
+organizationSchema.index({ name: 1 }, { unique: true });
 export default model<IOrganization>("Organization", organizationSchema);
