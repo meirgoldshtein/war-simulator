@@ -30,3 +30,4 @@ const attackSchema = new Schema<IAttack>({
 })
 
 export default model<IAttack>("Attack", attackSchema);
+export { Status }

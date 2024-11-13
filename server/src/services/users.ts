@@ -77,6 +77,7 @@ export const loginUserService = async (userGet: newUserDto) => {
         const token =  jwt.sign({
             user_id: userExists._id,
             orgId: userExists.orgId,
+            location: userExists.location,
             username: userExists.username
         }, process.env.JWT_SECRET as string, { expiresIn: "10m" });
         return { success: true, data: { ...userExists, password: '********' }, message: "User logged in successfully", status: 200, token }
