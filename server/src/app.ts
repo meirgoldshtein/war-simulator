@@ -8,6 +8,9 @@ import http from 'http';
 import { Server } from 'socket.io';
 import userRouter from './routers/userRouter';
 import attackRouter from './routers/attackRouter';
+import { verifyToken } from './socket';
+import { TokenPayload } from './types/tokenPayload';
+import organizationRouter from './routers/organizationRouter';
 
 const PORT = process.env.PORT || 3000;
 
@@ -20,13 +23,36 @@ app.use(express.json());
 
 app.use('/api/users', userRouter);
 app.use('/api/attack', attackRouter);
+app.use('/api/organizations', organizationRouter);
 export const io = new Server(server,{ cors: { origin: "*" } });
+
 io.on('connection', (socket) => {
-    console.log('socket: a user connected');
-    
+    console.log('Client connected');
+
+
+    socket.on('authenticate', (token: string) => {
+        const decoded = verifyToken(token);
+        
+        if (!decoded) {
+            socket.emit('auth_error', 'Invalid token');
+            return;
+        }
+        const { location } = decoded as TokenPayload;
+        socket.join(location);
+        console.log(`Client joined room: ${location}`);
+        socket.emit('joined_room', { location });
+        socket.on('newLaunch', (data) => {
+            io.to(location).emit('newLaunch', {
+                ...data,
+                location,
+            });
+        });
+    });
+
     socket.on('disconnect', () => {
-        console.log('socket: a user disconnected');
+        console.log('Client disconnected');
     });
 });
+
 
 server.listen(PORT, () => console.log(`Listening on port ${PORT},visit http://localhost:${PORT}`));
