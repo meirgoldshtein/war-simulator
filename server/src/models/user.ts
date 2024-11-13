@@ -9,7 +9,6 @@ export interface IUser extends Document {
     username: string,
     password: string,
     organization: string,
-    location: string,
     resources: IRresource[],
     budget: number,
 }
@@ -29,11 +28,6 @@ const userSchema = new Schema<IUser>({
     organization: {
         type: String,
         required: [true, "Password is required"]
-    },
-    location: {
-        type: String,
-        required: [true, "Location is required"]
-
     },
     resources: {
         type: [{
