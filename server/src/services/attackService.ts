@@ -2,9 +2,9 @@ import attack from "../models/attack"
 import attackDto from "../types/attackDto"
 import { CustomError } from "../types/errors"
 
-export const getAttacksService = async () => {
+export const getAttacksService = async (userLocation: string) => {
     try {
-        const attacks = await attack.find({}).lean()
+        const attacks = await attack.find({distLocation: userLocation}).lean()
         return { success: true, data: attacks, message: "Attacks fetched successfully", status: 200 }
     } catch (error) {
         throw error

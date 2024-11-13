@@ -4,7 +4,9 @@ import attackDto from "../types/attackDto"
 
 export const getAttacks = async (req: Request, res: Response) => {
     try {
-        const attacks = await getAttacksService()
+        const userLocation = (req as any).user.location
+
+        const attacks = await getAttacksService(userLocation)
         res.status(200).json(attacks)
     } catch (error) {
         res.status(500).json(error)
