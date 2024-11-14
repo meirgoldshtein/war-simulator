@@ -29,7 +29,6 @@ export const io = new Server(server,{ cors: { origin: "*" } });
 io.on('connection', (socket) => {
     console.log('Client connected');
 
-
     socket.on('authenticate', (token: string) => {
         const decoded = verifyToken(token);
         

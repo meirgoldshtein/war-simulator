@@ -1,4 +1,5 @@
 import attack from "../models/attack"
+import missile from "../models/missile"
 import attackDto from "../types/attackDto"
 import { CustomError } from "../types/errors"
 
@@ -13,8 +14,12 @@ export const getAttacksService = async (userLocation: string) => {
 
 export const launchAttackService = async (payload :attackDto) => {
     try {
-        const { rocket, launchTime, timeToHit, orgSrc, distLocation } = payload
-        const newAttack = new attack({ rocket, launchTime, timeToHit, orgSrc, distLocation })
+        // console.log(payload.rocket)
+        const missileExists = await missile.findOne({name:payload.rocket})
+        console.log(missileExists)
+        const timeToHit = missileExists?.speed
+        const { rocket, launchTime, orgSrc, distLocation } = payload
+        const newAttack = new attack({ rocket, launchTime, orgSrc, distLocation, timeToHit })
         await newAttack.save()
         return { success: true, data: newAttack, message: "Attack launched successfully", status: 200 }
     } catch (error) {

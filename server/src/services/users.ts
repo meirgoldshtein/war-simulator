@@ -8,9 +8,9 @@ import organization from "../models/organization";
 
 export const registerUser = async (userGet: newUserDto) => {
     try {
-        const { username, password , location, organizationName, orgId  } = userGet
-        if (!username || !password || !location || !organizationName || !orgId) {
-            console.log(username, password);
+        const { username, password ,  orgId  } = userGet
+        if (!username || !password|| !orgId) {
+            console.log(userGet);
             throw new CustomError(
                 "All fields are required",
                 400
@@ -24,8 +24,12 @@ export const registerUser = async (userGet: newUserDto) => {
                 400
             )
         }
+
         //find the initial resources
         const org = await organization.findOne({_id: orgId}).lean()
+        const organizationName = org?.name
+        console.log(org?.name.split("-")[1])
+        const location = org?.name.split("-")[1] ? org?.name.split("-")[1] : "not-israel"
         console.log(org)
         const initialResources = org?.resources
         const budget = org?.budget
@@ -37,7 +41,7 @@ export const registerUser = async (userGet: newUserDto) => {
               resources: initialResources,
                budget,
             orgId,
-            location: userGet.location, })
+            location: location, })
             console.log(newUser)
         await newUser.save()
         const data = await user.findOne({ username }).lean()

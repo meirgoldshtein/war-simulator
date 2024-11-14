@@ -15,6 +15,7 @@ export const getAttacks = async (req: Request, res: Response) => {
 
 export const launchAttack = async (req: Request<any, any, attackDto>, res: Response) => {
     try {
+        console.log(req.body)
         const attack = await launchAttackService(req.body)
         res.status(200).json(attack)
     } catch (error) {
