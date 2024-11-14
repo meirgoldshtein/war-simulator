@@ -10,7 +10,6 @@ export const registerUser = async (userGet: newUserDto) => {
     try {
         const { username, password ,  orgId  } = userGet
         if (!username || !password|| !orgId) {
-            console.log(userGet);
             throw new CustomError(
                 "All fields are required",
                 400
@@ -28,9 +27,7 @@ export const registerUser = async (userGet: newUserDto) => {
         //find the initial resources
         const org = await organization.findOne({_id: orgId}).lean()
         const organizationName = org?.name
-        console.log(org?.name.split("-")[1])
         const location = org?.name.split("-")[1] ? org?.name.split("-")[1] : "not-israel"
-        console.log(org)
         const initialResources = org?.resources
         const budget = org?.budget
         const hashedPassword = await bcrypt.hash(password, 10)
@@ -42,7 +39,6 @@ export const registerUser = async (userGet: newUserDto) => {
                budget,
             orgId,
             location: location, })
-            console.log(newUser)
         await newUser.save()
         const data = await user.findOne({ username }).lean()
         return { success: true, data: { ...data, password: '********' }, message: "User created successfully", status: 201 }
@@ -83,7 +79,7 @@ export const loginUserService = async (userGet: newUserDto) => {
             orgId: userExists.orgId,
             location: userExists.location,
             username: userExists.username
-        }, process.env.JWT_SECRET as string, { expiresIn: "10m" });
+        }, process.env.JWT_SECRET as string, { expiresIn: "50m" });
         return { success: true, data: { ...userExists, password: '********' }, message: "User logged in successfully", status: 200, token }
     } catch (error) {
         throw error
@@ -103,7 +99,7 @@ export const verifyUserService = async (token:{user_id: string}) => {
             user_id: userExists._id,
             organization: userExists.organization,
             username: userExists.username
-        }, process.env.JWT_SECRET as string, { expiresIn: "1m" });
+        }, process.env.JWT_SECRET as string, { expiresIn: "50m" });
         return { success: true, data: { ...userExists, password: '********' }, message: "User logged in successfully", status: 200, token : newToken }
     } catch (error) {
         throw error
