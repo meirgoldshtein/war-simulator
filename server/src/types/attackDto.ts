@@ -8,4 +8,5 @@ export default interface attackDto {
     orgSrc: string;
     distLocation: string;
     status:Status
+    defense_emmo?: string
 }
